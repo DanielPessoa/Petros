@@ -1,19 +1,21 @@
 library(readxl)
-
-path <- "~/Documentos/R/Exercicio.xlsx"
-
-excel <- read_excel(path)
-
-library(data.table)
-
-dt <- as.data.table(excel)
-
-dt_split <- split(dt)
-
 library("jsonlite")
+library(dplyr)
+library(tidyr)
 
-json <- toJSON(dt_split, matrix = "rowmajor", pretty=TRUE)
+setwd("~/Documentos/R")
 
-write(json, "~/Documentos/R/test.json")
+aba1 <- read_excel("Exercicio.xlsx", sheet = "Contas")
+aba2 <- read_excel("Exercicio.xlsx", sheet = "DePara")
 
-?toJSON
+planilha <- aba2 %>%
+  inner_join(aba1)
+planilha <- rename(planilha, Contas = Conta)
+
+planilha2 <- split(planilha, planilha$Cliente)
+
+json <- toJSON(planilha2, dataframe = 'columns' , simplifyVector= TRUE, pretty=TRUE)
+
+write(json, "test.json")
+
+
